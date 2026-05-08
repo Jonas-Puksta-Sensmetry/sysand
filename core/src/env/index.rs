@@ -25,7 +25,7 @@ use std::{
 };
 
 use semver::Version;
-use serde::{Deserialize, de::DeserializeOwned};
+use serde::{Deserialize, Serialize, de::DeserializeOwned};
 use sha2::Sha256;
 use thiserror::Error;
 
@@ -372,14 +372,14 @@ pub(crate) async fn fetch_json<T: DeserializeOwned, P: HTTPAuthentication>(
 /// Top-level `index.json` — the list of every project IRI the index knows
 /// about. Used by `uris_async` for list-all enumeration. Per-project version
 /// data lives in `versions.json`.
-#[derive(Debug, Deserialize)]
-struct IndexJson {
-    projects: Vec<IndexProject>,
+#[derive(Debug, Serialize, Deserialize)]
+pub(crate) struct IndexJson {
+    pub(crate) projects: Vec<IndexProject>,
 }
 
-#[derive(Debug, Deserialize)]
-struct IndexProject {
-    iri: String,
+#[derive(Debug, Serialize, Deserialize)]
+pub(crate) struct IndexProject {
+    pub(crate) iri: String,
 }
 
 /// Per-project `versions.json`: enough to enumerate candidates and

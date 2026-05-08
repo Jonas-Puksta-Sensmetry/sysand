@@ -151,6 +151,7 @@ impl<ReadError> From<FsIoError> for IntoKparError<ReadError> {
 }
 
 impl LocalKParProject {
+    /// path should be absolute
     pub fn new<P: AsRef<Utf8Path>, Q: AsRef<Utf8Path>>(
         path: P,
         root: Q,
@@ -162,6 +163,8 @@ impl LocalKParProject {
             root: Some(root.to_path_buf()),
         })
     }
+
+    /// path should be absolute
     pub fn new_nominal<P: AsRef<Utf8Path>, Q: AsRef<Utf8Path>, N: AsRef<Utf8Path>>(
         path: P,
         root: Q,
@@ -175,6 +178,7 @@ impl LocalKParProject {
         })
     }
 
+    /// path should be absolute
     pub fn new_guess_root<P: AsRef<Utf8Path>>(path: P) -> Result<Self, Box<FsIoError>> {
         Ok(LocalKParProject {
             tmp_dir: tempdir().map_err(FsIoError::MkTempDir)?,
@@ -184,6 +188,7 @@ impl LocalKParProject {
         })
     }
 
+    /// path should be absolute
     pub fn new_guess_root_nominal<P: AsRef<Utf8Path>, N: AsRef<Utf8Path>>(
         path: P,
         nominal: N,
@@ -206,6 +211,7 @@ impl LocalKParProject {
         })
     }
 
+    /// path should be absolute
     pub fn from_project<Pr: ProjectRead, P: AsRef<Utf8Path>>(
         from: &Pr,
         path: P,

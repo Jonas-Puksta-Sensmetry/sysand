@@ -85,6 +85,8 @@ where
 pub enum FsIoError {
     #[error("failed to canonicalize path\n  `{0}`:\n  {1}")]
     Canonicalize(Utf8PathBuf, io::Error),
+    #[error("failed to make path absolute\n  `{0}`:\n  {1}")]
+    Absolute(Utf8PathBuf, io::Error),
     #[error("failed to create directory\n  `{0}`:\n  {1}")]
     MkDir(Utf8PathBuf, io::Error),
     #[error("failed to open file\n  `{0}`:\n  {1}")]
@@ -154,6 +156,11 @@ pub mod wrapfs {
 
         pub fn create<P: AsRef<Utf8Path>>(path: P) -> Result<fs::File, Box<FsIoError>> {
             fs::File::create(path.as_ref())
+                .map_err(|e| Box::new(FsIoError::CreateFile(path.as_ref().into(), e)))
+        }
+
+        pub fn create_new<P: AsRef<Utf8Path>>(path: P) -> Result<fs::File, Box<FsIoError>> {
+            fs::File::create_new(path.as_ref())
                 .map_err(|e| Box::new(FsIoError::CreateFile(path.as_ref().into(), e)))
         }
     }
@@ -235,7 +242,7 @@ pub mod wrapfs {
     /// see `std::path::absolute()`
     pub fn absolute<P: AsRef<Utf8Path>>(path: P) -> Result<Utf8PathBuf, Box<FsIoError>> {
         camino::absolute_utf8(path.as_ref())
-            .map_err(|e| Box::new(FsIoError::Canonicalize(path.as_ref().into(), e)))
+            .map_err(|e| Box::new(FsIoError::Absolute(path.as_ref().into(), e)))
     }
 
     /// Get current dir as UTF-8 path. If current dir path is not valid
